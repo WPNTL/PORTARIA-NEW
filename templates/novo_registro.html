@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Novo Registro - Sistema de Controle de Portaria{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-plus"></i> Novo Registro de Entrada</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('salvar_registro') }}" class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="destino" class="form-label">Destino:</label>
+                                <input type="text" class="form-control" name="destino" id="destino" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe o destino.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="tipo" class="form-label">Tipo:</label>
+                                <select class="form-select" name="tipo" id="tipo" required>
+                                    <option value="">Selecione o tipo</option>
+                                    <option value="Carro">Carro</option>
+                                    <option value="Caminhão">Caminhão</option>
+                                    <option value="Moto">Moto</option>
+                                    <option value="Van">Van</option>
+                                    <option value="Ônibus">Ônibus</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Por favor, selecione o tipo de veículo.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="empresa" class="form-label">Empresa:</label>
+                                <input type="text" class="form-control" name="empresa" id="empresa" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe a empresa.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="nome" class="form-label">Nome do Motorista:</label>
+                                <input type="text" class="form-control" name="nome" id="nome" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe o nome do motorista.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="rg" class="form-label">RG/CPF:</label>
+                                <input type="text" class="form-control" name="rg" id="rg">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="veiculo" class="form-label">Veículo:</label>
+                                <input type="text" class="form-control" name="veiculo" id="veiculo" 
+                                       placeholder="Ex: Volkswagen Gol">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="placa" class="form-label">Placa:</label>
+                                <input type="text" class="form-control" name="placa" id="placa" 
+                                       placeholder="Ex: ABC-1234" style="text-transform: uppercase;" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe a placa do veículo.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="cr" class="form-label">CR (Código de Referência):</label>
+                                <input type="text" class="form-control" name="cr" id="cr">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="data_entrada" class="form-label">Data de Entrada:</label>
+                                <input type="date" class="form-control" name="data_entrada" id="data_entrada" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe a data de entrada.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="hora_entrada" class="form-label">Hora de Entrada:</label>
+                                <input type="time" class="form-control" name="hora_entrada" id="hora_entrada" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe a hora de entrada.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="n_nota" class="form-label">Número da Nota:</label>
+                                <input type="text" class="form-control" name="n_nota" id="n_nota">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="obs" class="form-label">Observações:</label>
+                            <textarea class="form-control" name="obs" id="obs" rows="3" 
+                                      placeholder="Observações adicionais..."></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Salvar Registro
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Definir data e hora atuais como padrão
+    const now = new Date();
+    
+    // Data atual
+    const today = now.toISOString().split('T')[0];
+    document.getElementById('data_entrada').value = today;
+    
+    // Hora atual
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('hora_entrada').value = `${hours}:${minutes}`;
+    
+    // Focar no primeiro campo
+    document.getElementById('destino').focus();
+    
+    // Validação da placa
+    document.getElementById('placa').addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+        
+        // Validação básica de formato de placa
+        const placa = this.value.replace(/[^A-Z0-9]/g, '');
+        if (placa.length >= 3 && placa.length <= 7) {
+            // Formato antigo: ABC1234 -> ABC-1234
+            if (placa.length === 7 && /^[A-Z]{3}[0-9]{4}$/.test(placa)) {
+                this.value = placa.substring(0, 3) + '-' + placa.substring(3);
+            }
+            // Formato novo: ABC1D23 (Mercosul)
+            else if (placa.length === 7 && /^[A-Z]{3}[0-9][A-Z][0-9]{2}$/.test(placa)) {
+                this.value = placa;
+            }
+        }
+    });
+    
+    // Auto-complete básico para empresas (pode ser expandido)
+    const empresaInput = document.getElementById('empresa');
+    const empresasComuns = [
+        'Transportadora ABC',
+        'Logística XYZ',
+        'Correios',
+        'DHL',
+        'Fedex',
+        'Mercado Livre',
+        'Amazon'
+    ];
+    
+    empresaInput.addEventListener('input', function() {
+        // Implementar auto-complete se necessário
+    });
+});
+</script>
+{% endblock %}

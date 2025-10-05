@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Registro - Sistema de Controle de Portaria{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-edit"></i> Editar Registro #{{ registro.id }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('atualizar_registro', id=registro.id) }}" 
+                          class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="destino" class="form-label">Destino:</label>
+                                <input type="text" class="form-control" name="destino" id="destino" 
+                                       value="{{ registro.destino }}" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe o destino.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="tipo" class="form-label">Tipo:</label>
+                                <select class="form-select" name="tipo" id="tipo" required>
+                                    <option value="">Selecione o tipo</option>
+                                    <option value="Carro" {% if registro.tipo == 'Carro' %}selected{% endif %}>Carro</option>
+                                    <option value="Caminhão" {% if registro.tipo == 'Caminhão' %}selected{% endif %}>Caminhão</option>
+                                    <option value="Moto" {% if registro.tipo == 'Moto' %}selected{% endif %}>Moto</option>
+                                    <option value="Van" {% if registro.tipo == 'Van' %}selected{% endif %}>Van</option>
+                                    <option value="Ônibus" {% if registro.tipo == 'Ônibus' %}selected{% endif %}>Ônibus</option>
+                                    <option value="Outros" {% if registro.tipo == 'Outros' %}selected{% endif %}>Outros</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Por favor, selecione o tipo de veículo.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="empresa" class="form-label">Empresa:</label>
+                                <input type="text" class="form-control" name="empresa" id="empresa" 
+                                       value="{{ registro.empresa }}" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe a empresa.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="nome" class="form-label">Nome do Motorista:</label>
+                                <input type="text" class="form-control" name="nome" id="nome" 
+                                       value="{{ registro.nome }}" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe o nome do motorista.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="rg" class="form-label">RG/CPF:</label>
+                                <input type="text" class="form-control" name="rg" id="rg" 
+                                       value="{{ registro.rg }}">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="veiculo" class="form-label">Veículo:</label>
+                                <input type="text" class="form-control" name="veiculo" id="veiculo" 
+                                       value="{{ registro.veiculo }}" placeholder="Ex: Volkswagen Gol">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="placa" class="form-label">Placa:</label>
+                                <input type="text" class="form-control" name="placa" id="placa" 
+                                       value="{{ registro.placa }}" placeholder="Ex: ABC-1234" 
+                                       style="text-transform: uppercase;" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe a placa do veículo.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="cr" class="form-label">CR (Código de Referência):</label>
+                                <input type="text" class="form-control" name="cr" id="cr" 
+                                       value="{{ registro.cr }}">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="data_entrada" class="form-label">Data de Entrada:</label>
+                                <input type="date" class="form-control" name="data_entrada" id="data_entrada" 
+                                       value="{{ registro.data_entrada }}" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe a data de entrada.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="hora_entrada" class="form-label">Hora de Entrada:</label>
+                                <input type="time" class="form-control" name="hora_entrada" id="hora_entrada" 
+                                       value="{{ registro.hora_entrada }}" required>
+                                <div class="invalid-feedback">
+                                    Por favor, informe a hora de entrada.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="data_saida" class="form-label">Data de Saída:</label>
+                                <input type="date" class="form-control" name="data_saida" id="data_saida" 
+                                       value="{{ registro.data_saida }}">
+                                <small class="form-text text-muted">Deixe em branco se ainda não saiu</small>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="hora_saida" class="form-label">Hora de Saída:</label>
+                                <input type="time" class="form-control" name="hora_saida" id="hora_saida" 
+                                       value="{{ registro.hora_saida }}">
+                                <small class="form-text text-muted">Deixe em branco se ainda não saiu</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="n_nota" class="form-label">Número da Nota:</label>
+                                <input type="text" class="form-control" name="n_nota" id="n_nota" 
+                                       value="{{ registro.n_nota }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="obs" class="form-label">Observações:</label>
+                            <textarea class="form-control" name="obs" id="obs" rows="3" 
+                                      placeholder="Observações adicionais...">{{ registro.obs }}</textarea>
+                        </div>
+
+                        <!-- Informações de Auditoria -->
+                        <div class="card bg-light mb-3">
+                            <div class="card-header">
+                                <small><strong>Informações de Auditoria</strong></small>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <small>
+                                            <strong>Criado por:</strong> {{ registro.usuario }}<br>
+                                            <strong>Em:</strong> {{ registro.periodo }}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        {% if registro.usuarioalterado %}
+                                        <small>
+                                            <strong>Última alteração:</strong> {{ registro.usuarioalterado }}<br>
+                                            <strong>Em:</strong> {{ registro.periodoalterado }}
+                                        </small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('consultar') }}" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Salvar Alterações
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Focar no primeiro campo
+    document.getElementById('destino').focus();
+    
+    // Validação da placa
+    document.getElementById('placa').addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+        
+        // Validação básica de formato de placa
+        const placa = this.value.replace(/[^A-Z0-9]/g, '');
+        if (placa.length >= 3 && placa.length <= 7) {
+            // Formato antigo: ABC1234 -> ABC-1234
+            if (placa.length === 7 && /^[A-Z]{3}[0-9]{4}$/.test(placa)) {
+                this.value = placa.substring(0, 3) + '-' + placa.substring(3);
+            }
+            // Formato novo: ABC1D23 (Mercosul)
+            else if (placa.length === 7 && /^[A-Z]{3}[0-9][A-Z][0-9]{2}$/.test(placa)) {
+                this.value = placa;
+            }
+        }
+    });
+    
+    // Sincronizar campos de data e hora de saída
+    const dataSaida = document.getElementById('data_saida');
+    const horaSaida = document.getElementById('hora_saida');
+    
+    dataSaida.addEventListener('change', function() {
+        if (this.value && !horaSaida.value) {
+            // Se definiu data de saída mas não hora, sugerir hora atual
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            horaSaida.value = `${hours}:${minutes}`;
+        } else if (!this.value) {
+            // Se removeu data de saída, limpar hora também
+            horaSaida.value = '';
+        }
+    });
+    
+    horaSaida.addEventListener('change', function() {
+        if (this.value && !dataSaida.value) {
+            // Se definiu hora de saída mas não data, sugerir data atual
+            const today = new Date().toISOString().split('T')[0];
+            dataSaida.value = today;
+        }
+    });
+});
+</script>
+{% endblock %}

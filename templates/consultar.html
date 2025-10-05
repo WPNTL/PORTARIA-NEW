@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}Consultar Registros - Sistema de Controle de Portaria{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Filtros de Busca -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5><i class="fas fa-filter"></i> Filtros de Busca</h5>
+        </div>
+        <div class="card-body">
+            <form method="GET" action="{{ url_for('consultar') }}">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="empresa" class="form-label">Empresa:</label>
+                        <input type="text" class="form-control" name="empresa" id="empresa" 
+                               value="{{ empresa }}" placeholder="Nome da empresa">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="nome" class="form-label">Nome:</label>
+                        <input type="text" class="form-control" name="nome" id="nome" 
+                               value="{{ nome }}" placeholder="Nome do motorista">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="placa" class="form-label">Placa:</label>
+                        <input type="text" class="form-control" name="placa" id="placa" 
+                               value="{{ placa }}" placeholder="Placa do veículo">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="status" class="form-label">Status:</label>
+                        <select class="form-select" name="status" id="status">
+                            <option value="">Todos</option>
+                            <option value="dentro" {% if status == 'dentro' %}selected{% endif %}>Dentro</option>
+                            <option value="saiu" {% if status == 'saiu' %}selected{% endif %}>Saiu</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="data_inicio" class="form-label">Data Início:</label>
+                        <input type="date" class="form-control" name="data_inicio" id="data_inicio" 
+                               value="{{ data_inicio }}">
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label for="data_fim" class="form-label">Data Fim:</label>
+                        <input type="date" class="form-control" name="data_fim" id="data_fim" 
+                               value="{{ data_fim }}">
+                    </div>
+                    
+                    <div class="col-md-6 mb-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                        <a href="{{ url_for('consultar') }}" class="btn btn-secondary">
+                            <i class="fas fa-eraser"></i> Limpar
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5><i class="fas fa-list"></i> Registros Encontrados ({{ registros|length }})</h5>
+            <div>
+                <button class="btn btn-sm btn-outline-success" onclick="window.print()">
+                    <i class="fas fa-print"></i> Imprimir
+                </button>
+                <button class="btn btn-sm btn-outline-info" onclick="exportData('excel')">
+                    <i class="fas fa-file-excel"></i> Excel
+                </button>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if registros %}
+            <!-- Busca rápida na tabela -->
+            <div class="mb-3">
+                <input type="text" class="form-control table-search" data-target="#registros-table" 
+                       placeholder="Busca rápida na tabela...">
+            </div>
+            
+            <div class="table-responsive">
+                <table class="table table-striped table-hover" id="registros-table">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Empresa</th>
+                            <th>Nome</th>
+                            <th>Veículo</th>
+                            <th>Placa</th>
+                            <th>Entrada</th>
+                            <th>Saída</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for registro in registros %}
+                        <tr>
+                            <td>{{ registro.id }}</td>
+                            <td>{{ registro.empresa }}</td>
+                            <td>{{ registro.nome }}</td>
+                            <td>{{ registro.veiculo }}</td>
+                            <td>{{ registro.placa }}</td>
+                            <td>
+                                <small>
+                                    {{ registro.data_entrada }}<br>
+                                    {{ registro.hora_entrada }}
+                                </small>
+                            </td>
+                            <td>
+                                {% if registro.data_saida %}
+                                <small>
+                                    {{ registro.data_saida }}<br>
+                                    {{ registro.hora_saida }}
+                                </small>
+                                {% else %}
+                                <span class="text-muted">--</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if registro.data_saida %}
+                                    <span class="badge bg-secondary">Saiu</span>
+                                {% else %}
+                                    <span class="badge bg-success">Dentro</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    {% if not registro.data_saida %}
+                                    <form method="POST" action="{{ url_for('registrar_saida', id=registro.id) }}" 
+                                          style="display: inline;">
+                                        <button type="submit" class="btn btn-warning btn-sm" 
+                                                title="Registrar Saída">
+                                            <i class="fas fa-sign-out-alt"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                    
+                                    <a href="{{ url_for('editar_registro', id=registro.id) }}" 
+                                       class="btn btn-info btn-sm" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    
+                                    <form method="POST" action="{{ url_for('excluir_registro', id=registro.id) }}" 
+                                          style="display: inline;" 
+                                          onsubmit="return confirm('Tem certeza que deseja excluir este registro?')">
+                                        <button type="submit" class="btn btn-danger btn-sm btn-delete" 
+                                                title="Excluir">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if registros|length == 100 %}
+            <div class="alert alert-info mt-3">
+                <i class="fas fa-info-circle"></i>
+                Mostrando apenas os primeiros 100 registros. Use os filtros para refinar sua busca.
+            </div>
+            {% endif %}
+            
+            {% else %}
+            <div class="text-center text-muted py-5">
+                <i class="fas fa-search fa-3x mb-3"></i>
+                <h5>Nenhum registro encontrado</h5>
+                <p>Tente ajustar os filtros de busca ou 
+                   <a href="{{ url_for('novo_registro') }}">cadastre um novo registro</a>.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Busca em tempo real na tabela
+    const searchInput = document.querySelector('.table-search');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const table = document.querySelector('#registros-table');
+            const rows = table.querySelectorAll('tbody tr');
+
+            rows.forEach(function(row) {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(filter) ? '' : 'none';
+            });
+        });
+    }
+    
+    // Confirmar exclusões
+    const deleteButtons = document.querySelectorAll('.btn-delete');
+    deleteButtons.forEach(function(button) {
+        button.addEventListener('click', function(e) {
+            if (!confirm('Tem certeza que deseja excluir este registro?')) {
+                e.preventDefault();
+            }
+        });
+    });
+    
+    // Definir data atual como padrão para filtros se estiverem vazios
+    const dataInicio = document.getElementById('data_inicio');
+    const dataFim = document.getElementById('data_fim');
+    
+    if (!dataInicio.value && !dataFim.value) {
+        const today = new Date().toISOString().split('T')[0];
+        // Não definir automaticamente para permitir busca em todas as datas
+    }
+});
+
+// Função para exportar dados (placeholder)
+function exportData(format) {
+    alert('Funcionalidade de exportação em desenvolvimento para o formato: ' + format);
+    // Aqui poderia ser implementada a exportação real
+}
+</script>
+{% endblock %}
