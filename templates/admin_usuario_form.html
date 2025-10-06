@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if usuario %}Editar{% else %}Novo{% endif %} Usuário - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-danger">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('admin_panel') }}">
+                <i class="fas fa-arrow-left"></i> Voltar ao Painel Admin
+            </a>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="card">
+                    <div class="card-header bg-danger text-white">
+                        <h4>
+                            <i class="fas fa-user-{% if usuario %}edit{% else %}plus{% endif %}"></i>
+                            {% if usuario %}Editar{% else %}Novo{% endif %} Usuário
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" 
+                              action="{% if usuario %}{{ url_for('admin_atualizar_usuario', user_id=usuario.id) }}{% else %}{{ url_for('admin_criar_usuario') }}{% endif %}"
+                              class="needs-validation" novalidate>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="username" class="form-label">
+                                        <i class="fas fa-user"></i> Usuário: *
+                                    </label>
+                                    <input type="text" class="form-control" name="username" id="username" 
+                                           value="{% if usuario %}{{ usuario.username }}{% endif %}" 
+                                           required style="text-transform: uppercase;">
+                                    <div class="invalid-feedback">
+                                        Por favor, informe o nome de usuário.
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="ip" class="form-label">
+                                        <i class="fas fa-network-wired"></i> IP:
+                                    </label>
+                                    <input type="text" class="form-control" name="ip" id="ip" 
+                                           value="{% if usuario %}{{ usuario.ip }}{% else %}livre{% endif %}" 
+                                           placeholder="livre ou IP específico">
+                                    <small class="form-text text-muted">Use "livre" para qualquer IP</small>
+                                </div>
+                            </div>
+
+                            {% if not usuario %}
+                            <div class="mb-3">
+                                <label for="senha" class="form-label">
+                                    <i class="fas fa-lock"></i> Senha: *
+                                </label>
+                                <input type="password" class="form-control" name="senha" id="senha" required minlength="4">
+                                <div class="invalid-feedback">
+                                    Por favor, informe a senha (mínimo 4 caracteres).
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-crown"></i> Tipo de Usuário:
+                                </label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="is_admin" 
+                                           id="is_admin_nao" value="nao" 
+                                           {% if not usuario or usuario.is_admin != 1 %}checked{% endif %}>
+                                    <label class="form-check-label" for="is_admin_nao">
+                                        Usuário Normal
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="is_admin" 
+                                           id="is_admin_sim" value="sim"
+                                           {% if usuario and usuario.is_admin == 1 %}checked{% endif %}>
+                                    <label class="form-check-label" for="is_admin_sim">
+                                        <strong class="text-danger">Administrador</strong> (acesso total)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <h5 class="mb-3"><i class="fas fa-key"></i> Permissões do Sistema</h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="libinserir" value="sim" id="libinserir"
+                                               {% if not usuario or usuario.libinserir == 'sim' %}checked{% endif %}>
+                                        <label class="form-check-label" for="libinserir">
+                                            <i class="fas fa-plus-circle text-success"></i> Inserir Registros
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="libalterar" value="sim" id="libalterar"
+                                               {% if not usuario or usuario.libalterar == 'sim' %}checked{% endif %}>
+                                        <label class="form-check-label" for="libalterar">
+                                            <i class="fas fa-edit text-warning"></i> Alterar Registros
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="libexcluir" value="sim" id="libexcluir"
+                                               {% if usuario and usuario.libexcluir == 'sim' %}checked{% endif %}>
+                                        <label class="form-check-label" for="libexcluir">
+                                            <i class="fas fa-trash text-danger"></i> Excluir Registros
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" 
+                                               name="libconsulta" value="sim" id="libconsulta"
+                                               {% if not usuario or usuario.libconsulta == 'sim' %}checked{% endif %}>
+                                        <label class="form-check-label" for="libconsulta">
+                                            <i class="fas fa-search text-info"></i> Consultar Registros
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Atenção:</strong> Administradores têm acesso total ao sistema, incluindo gerenciamento de usuários.
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary me-md-2">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save"></i> 
+                                    {% if usuario %}Atualizar{% else %}Criar{% endif %} Usuário
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Converter username para maiúsculo
+            document.getElementById('username').addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+
+            // Validação de formulário
+            const form = document.querySelector('.needs-validation');
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            });
+
+            // Converter checkboxes para valores corretos
+            form.addEventListener('submit', function() {
+                const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(function(checkbox) {
+                    if (!checkbox.checked) {
+                        const hidden = document.createElement('input');
+                        hidden.type = 'hidden';
+                        hidden.name = checkbox.name;
+                        hidden.value = 'nao';
+                        form.appendChild(hidden);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

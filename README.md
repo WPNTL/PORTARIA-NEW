@@ -6,6 +6,7 @@ Este projeto apresenta uma versão modernizada de um sistema de controle de port
 
 *   **Backend:** Python 3.x, Flask
 *   **Banco de Dados:** SQLite3
+*   **Hashing de Senhas:** bcrypt
 *   **Frontend:** HTML5, CSS3 (com Bootstrap), JavaScript
 
 ## Estrutura de Arquivos
@@ -14,9 +15,10 @@ A estrutura de diretórios do projeto é organizada da seguinte forma:
 
 ```
 . (diretório raiz do projeto)
-├── app.py                      # Aplicação Flask principal
-├── create_db.py                # Script para criar e popular o banco de dados SQLite
-├── portaria.db                 # Arquivo do banco de dados SQLite (gerado após execução de create_db.py)
+├── app_bcrypt.py               # Aplicação Flask principal (versão com bcrypt)
+├── setup_database_bcrypt.py    # Script consolidado para criar/configurar o banco de dados com bcrypt
+├── check_database_bcrypt.py    # Script para verificar o estado do banco de dados com bcrypt
+├── portaria.db                 # Arquivo do banco de dados SQLite (gerado após execução de setup_database_bcrypt.py)
 ├── README.md                   # Este arquivo de documentação
 ├── templates/                  # Contém os arquivos HTML (templates Jinja2)
 │   ├── base.html               # Template base para todas as páginas
@@ -24,7 +26,10 @@ A estrutura de diretórios do projeto é organizada da seguinte forma:
 │   ├── dashboard.html          # Dashboard principal
 │   ├── novo_registro.html      # Formulário para adicionar novo registro
 │   ├── consultar.html          # Página para consultar e gerenciar registros
-│   └── editar_registro.html    # Formulário para editar um registro existente
+│   ├── editar_registro.html    # Formulário para editar um registro existente
+│   ├── admin_panel.html        # Painel de administração
+│   ├── admin_usuario_form.html # Formulário para criar/editar usuários admin
+│   └── admin_alterar_senha.html# Formulário para alterar senha de usuários admin
 └── static/                     # Contém arquivos estáticos (CSS, JS, imagens)
     ├── css/
     │   └── style.css           # Estilos CSS personalizados
@@ -42,28 +47,44 @@ Certifique-se de ter o Python 3.x e o `pip` (gerenciador de pacotes do Python) i
 
 ### 2. Instalação das Dependências
 
-Navegue até o diretório raiz do projeto no terminal e instale as bibliotecas Python necessárias:
+Navegue até o diretório raiz do projeto no terminal e instale as bibliotecas Python necessárias. **É crucial instalar `bcrypt` para o hashing de senhas.**
 
 ```bash
-pip install Flask Flask-Session
+pip install Flask Flask-Session bcrypt
 ```
 
-### 3. Inicialização do Banco de Dados
+### 3. Configuração do Banco de Dados (Com BCRYPT)
 
-O banco de dados SQLite (`portaria.db`) será criado e populado com um usuário padrão ao executar o script `create_db.py`. Certifique-se de que o arquivo `portaria.db` não exista antes de executar este passo, ou exclua-o para garantir uma inicialização limpa.
+Para garantir que o banco de dados `portaria.db` seja criado corretamente com todas as tabelas e usuários padrão, **com o usuário ADMIN usando hashing bcrypt**, siga estes passos:
+
+1.  **Pare a aplicação Flask** (se estiver rodando).
+2.  **Exclua *qualquer* arquivo `portaria.db` existente** no diretório do projeto. No terminal, execute:
+    ```bash
+    del portaria.db  # No Windows
+    # ou
+    rm portaria.db   # No Linux/macOS
+    ```
+    **Verifique manualmente** se o arquivo `portaria.db` realmente não está mais lá após este comando.
+3.  **Execute o script de configuração do banco de dados com bcrypt:**
+    ```bash
+    python3 setup_database_bcrypt.py
+    ```
+    Este script irá criar um novo `portaria.db` com a estrutura correta e inserir os usuários padrão, incluindo o `ADMIN` com a senha `admin123` hasheada com bcrypt. Você deverá ver mensagens de sucesso no terminal.
+
+### 4. Verificação do Banco de Dados (Opcional, mas recomendado)
+
+Para confirmar que o banco de dados e os usuários foram criados corretamente, você pode executar o script de verificação com suporte a bcrypt:
 
 ```bash
-python3 create_db.py
+python3 check_database_bcrypt.py
 ```
 
-Você deverá ver a mensagem "Banco de dados 'portaria.db' e tabelas criadas com sucesso." no terminal.
+### 5. Execução da Aplicação Flask (Com BCRYPT)
 
-### 4. Execução da Aplicação Flask
-
-Após a criação do banco de dados, você pode iniciar a aplicação Flask:
+Após a configuração do banco de dados, você pode iniciar a aplicação Flask usando a versão `app_bcrypt.py`:
 
 ```bash
-python3 app.py
+python3 app_bcrypt.py
 ```
 
 O servidor Flask será iniciado e estará acessível em `http://127.0.0.1:5000` (ou outro endereço IP local, dependendo da sua configuração de rede).
@@ -79,22 +100,31 @@ O sistema oferece as seguintes funcionalidades principais:
 *   **Registrar Saída:** Opção para marcar a saída de um veículo, atualizando o status e a hora de saída no banco de dados.
 *   **Editar Registro:** Permite modificar os detalhes de um registro existente.
 *   **Excluir Registro:** Remove um registro do sistema.
+*   **Painel de Administração:** (Acessível apenas para usuários `is_admin=1`) Gerenciamento de usuários, incluindo criação, edição, exclusão e alteração de senhas e permissões.
 
 ## Usuários Padrão para Teste
 
 Para testar a aplicação, utilize os seguintes usuários e senhas:
 
+*   **Usuário:** `ADMIN`
+    *   **Senha:** `admin123`
+    *   **Permissões:** Acesso completo e privilégios de administrador (senha hasheada com bcrypt).
+
 *   **Usuário:** `EDER`
     *   **Senha:** `12345`
-    *   **Permissões:** Acesso completo (incluindo consulta).
+    *   **Permissões:** Acesso completo (incluindo consulta) (senha em texto plano).
+
+*   **Usuário:** `VAGNER`
+    *   **Senha:** `vagner`
+    *   **Permissões:** Acesso completo (exceto exclusão) (senha em texto plano).
 
 *   **Usuário:** `LIANE`
-    *   **Senha:** `12345`
-    *   **Permissões:** Acesso completo (incluindo consulta).
+    *   **Senha:** `230771`
+    *   **Permissões:** Acesso completo (exceto exclusão) (senha em texto plano).
 
 ## Observações Importantes
 
-*   **Segurança:** Este projeto é uma modernização de um sistema legado e, como tal, algumas práticas de segurança (como hashing de senhas) não foram implementadas para manter a equivalência com o sistema original. Para um ambiente de produção, é **altamente recomendável** implementar hashing de senhas e outras medidas de segurança.
-*   **Permissões de Usuário:** O sistema possui um controle básico de permissões (`libconsulta`), que pode ser expandido para gerenciar o acesso a outras funcionalidades.
+*   **Segurança:** Para um ambiente de produção, é **altamente recomendável** que *todas* as senhas sejam hasheadas (não apenas a do ADMIN) e que o `app.secret_key` seja uma chave forte e secreta.
+*   **Permissões de Usuário:** O sistema possui um controle básico de permissões (`libconsulta`, `libinserir`, etc.), que pode ser expandido para gerenciar o acesso a outras funcionalidades.
 
 ---

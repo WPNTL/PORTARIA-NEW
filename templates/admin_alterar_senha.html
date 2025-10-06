@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alterar Senha - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-danger">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('admin_panel') }}">
+                <i class="fas fa-arrow-left"></i> Voltar ao Painel Admin
+            </a>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <div class="card">
+                    <div class="card-header bg-warning">
+                        <h4>
+                            <i class="fas fa-key"></i> Alterar Senha do Usuário
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <i class="fas fa-user"></i>
+                            Alterando senha do usuário: <strong>{{ usuario.username }}</strong>
+                        </div>
+
+                        <form method="POST" 
+                              action="{{ url_for('admin_alterar_senha', user_id=usuario.id) }}"
+                              class="needs-validation" novalidate id="alterarSenhaForm">
+                            
+                            <div class="mb-3">
+                                <label for="nova_senha" class="form-label">
+                                    <i class="fas fa-lock"></i> Nova Senha: *
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" name="nova_senha" 
+                                           id="nova_senha" required minlength="4">
+                                    <button class="btn btn-outline-secondary" type="button" 
+                                            onclick="togglePassword('nova_senha')">
+                                        <i class="fas fa-eye" id="nova_senha_icon"></i>
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback">
+                                    A senha deve ter no mínimo 4 caracteres.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="confirmar_senha" class="form-label">
+                                    <i class="fas fa-lock"></i> Confirmar Nova Senha: *
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control" name="confirmar_senha" 
+                                           id="confirmar_senha" required minlength="4">
+                                    <button class="btn btn-outline-secondary" type="button" 
+                                            onclick="togglePassword('confirmar_senha')">
+                                        <i class="fas fa-eye" id="confirmar_senha_icon"></i>
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback" id="senha_mismatch">
+                                    As senhas não coincidem.
+                                </div>
+                            </div>
+
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Atenção:</strong> Esta ação irá alterar a senha do usuário imediatamente. 
+                                O usuário precisará usar a nova senha no próximo login.
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary me-md-2">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </a>
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-key"></i> Alterar Senha
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h6><i class="fas fa-lightbulb"></i> Dicas de Segurança</h6>
+                        <ul class="small mb-0">
+                            <li>Use senhas com pelo menos 8 caracteres</li>
+                            <li>Combine letras, números e símbolos</li>
+                            <li>Evite senhas óbvias como "12345" ou "senha"</li>
+                            <li>Não compartilhe senhas entre usuários</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const icon = document.getElementById(fieldId + '_icon');
+            
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('alterarSenhaForm');
+            const novaSenha = document.getElementById('nova_senha');
+            const confirmarSenha = document.getElementById('confirmar_senha');
+
+            form.addEventListener('submit', function(event) {
+                // Verificar se as senhas coincidem
+                if (novaSenha.value !== confirmarSenha.value) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    confirmarSenha.setCustomValidity('As senhas não coincidem');
+                } else {
+                    confirmarSenha.setCustomValidity('');
+                }
+
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                
+                form.classList.add('was-validated');
+            });
+
+            // Verificar em tempo real se as senhas coincidem
+            confirmarSenha.addEventListener('input', function() {
+                if (novaSenha.value === confirmarSenha.value) {
+                    confirmarSenha.setCustomValidity('');
+                } else {
+                    confirmarSenha.setCustomValidity('As senhas não coincidem');
+                }
+            });
+
+            // Focar no primeiro campo
+            novaSenha.focus();
+        });
+    </script>
+</body>
+</html>
