@@ -15,7 +15,7 @@ A estrutura de diretórios do projeto é organizada da seguinte forma:
 
 ```
 . (diretório raiz do projeto)
-├── app_bcrypt.py               # Aplicação Flask principal (versão com bcrypt)
+├── app.py               # Aplicação Flask principal (versão com bcrypt)
 ├── setup_database_bcrypt.py    # Script consolidado para criar/configurar o banco de dados com bcrypt
 ├── check_database_bcrypt.py    # Script para verificar o estado do banco de dados com bcrypt
 ├── portaria.db                 # Arquivo do banco de dados SQLite (gerado após execução de setup_database_bcrypt.py)
@@ -84,7 +84,7 @@ python3 check_database_bcrypt.py
 Após a configuração do banco de dados, você pode iniciar a aplicação Flask usando a versão `app_bcrypt.py`:
 
 ```bash
-python3 app_bcrypt.py
+python3 app.py
 ```
 
 O servidor Flask será iniciado e estará acessível em `http://127.0.0.1:5000` (ou outro endereço IP local, dependendo da sua configuração de rede).
@@ -113,10 +113,6 @@ Para testar a aplicação, utilize os seguintes usuários e senhas:
 *   **Usuário:** `EDER`
     *   **Senha:** `12345`
     *   **Permissões:** Acesso completo (incluindo consulta) (senha em texto plano).
-
-*   **Usuário:** `VAGNER`
-    *   **Senha:** `vagner`
-    *   **Permissões:** Acesso completo (exceto exclusão) (senha em texto plano).
 
 *   **Usuário:** `LIANE`
     *   **Senha:** `230771`

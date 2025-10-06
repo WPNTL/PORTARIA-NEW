@@ -96,6 +96,7 @@
                             <th>Nome</th>
                             <th>Veículo</th>
                             <th>Placa</th>
+                            <th>Nº Nota</th>
                             <th>Entrada</th>
                             <th>Saída</th>
                             <th>Status</th>
@@ -110,21 +111,22 @@
                             <td>{{ registro.nome }}</td>
                             <td>{{ registro.veiculo }}</td>
                             <td>{{ registro.placa }}</td>
+                            <td>{{ registro.n_nota if registro.n_nota else '' }}</td>
                             <td>
                                 <small>
-                                    {{ registro.data_entrada }}<br>
-                                    {{ registro.hora_entrada }}
+                                    {% if registro.data_entrada and registro.hora_entrada %}
+                                        {{ registro.data_entrada.split('-')[2] }}/{{ registro.data_entrada.split('-')[1] }}/{{ registro.data_entrada.split('-')[0] }} {{ registro.hora_entrada }}
+                                    {% endif %}
                                 </small>
                             </td>
                             <td>
-                                {% if registro.data_saida %}
                                 <small>
-                                    {{ registro.data_saida }}<br>
-                                    {{ registro.hora_saida }}
+                                    {% if registro.data_saida and registro.hora_saida %}
+                                        {{ registro.data_saida.split('-')[2] }}/{{ registro.data_saida.split('-')[1] }}/{{ registro.data_saida.split('-')[0] }} {{ registro.hora_saida }}
+                                    {% else %}
+                                        <span class="text-muted">--</span>
+                                    {% endif %}
                                 </small>
-                                {% else %}
-                                <span class="text-muted">--</span>
-                                {% endif %}
                             </td>
                             <td>
                                 {% if registro.data_saida %}
@@ -214,15 +216,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
-    // Definir data atual como padrão para filtros se estiverem vazios
-    const dataInicio = document.getElementById('data_inicio');
-    const dataFim = document.getElementById('data_fim');
-    
-    if (!dataInicio.value && !dataFim.value) {
-        const today = new Date().toISOString().split('T')[0];
-        // Não definir automaticamente para permitir busca em todas as datas
-    }
 });
 
 // Função para exportar dados (placeholder)

@@ -137,6 +137,7 @@
                                     <th>Nome</th>
                                     <th>Veículo</th>
                                     <th>Placa</th>
+                                    <th>Nº Nota</th>
                                     <th>Entrada</th>
                                     <th>Saída</th>
                                     <th>Status</th>
@@ -150,13 +151,22 @@
                                     <td>{{ registro.nome }}</td>
                                     <td>{{ registro.veiculo }}</td>
                                     <td>{{ registro.placa }}</td>
-                                    <td>{{ registro.data_entrada }} {{ registro.hora_entrada }}</td>
+                                    <td>{{ registro.n_nota if registro.n_nota else '' }}</td>
                                     <td>
-                                        {% if registro.data_saida %}
-                                            {{ registro.data_saida }} {{ registro.hora_saida }}
-                                        {% else %}
-                                            <span class="text-muted">--</span>
-                                        {% endif %}
+                                        <small>
+                                            {% if registro.data_entrada and registro.hora_entrada %}
+                                                {{ registro.data_entrada.split('-')[2] }}/{{ registro.data_entrada.split('-')[1] }}/{{ registro.data_entrada.split('-')[0] }} {{ registro.hora_entrada }}
+                                            {% endif %}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <small>
+                                            {% if registro.data_saida and registro.hora_saida %}
+                                                {{ registro.data_saida.split('-')[2] }}/{{ registro.data_saida.split('-')[1] }}/{{ registro.data_saida.split('-')[0] }} {{ registro.hora_saida }}
+                                            {% else %}
+                                                <span class="text-muted">--</span>
+                                            {% endif %}
+                                        </small>
                                     </td>
                                     <td>
                                         {% if registro.data_saida %}

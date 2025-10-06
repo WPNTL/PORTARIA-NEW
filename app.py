@@ -27,6 +27,43 @@ def hash_password_bcrypt(password):
     """Gera hash bcrypt para a senha"""
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
+def format_datetime_br(data, hora):
+    """Formata data e hora para padrão brasileiro: dd/mm/aaaa hh:mm:ss"""
+    if not data:
+        return ""
+    
+    try:
+        # Data vem no formato YYYY-MM-DD
+        partes_data = data.split('-')
+        if len(partes_data) == 3:
+            data_br = f"{partes_data[2]}/{partes_data[1]}/{partes_data[0]}"
+            
+            # Se houver hora, adiciona
+            if hora:
+                # Se a hora não tiver segundos, adiciona :00
+                if hora.count(':') == 1:
+                    hora = f"{hora}:00"
+                return f"{data_br} {hora}"
+            return data_br
+    except:
+        pass
+    
+    return f"{data} {hora}" if hora else data
+
+# Adicionar filtro Jinja2 para formatação de datas
+@app.template_filter('format_datetime_br')
+def format_datetime_br_filter(value):
+    """Filtro Jinja2 para formatar datetime"""
+    if not value:
+        return ""
+    try:
+        # Se for um objeto Row do SQLite, tentar pegar data e hora
+        if hasattr(value, 'data_entrada'):
+            return format_datetime_br(value.data_entrada, value.hora_entrada)
+        return value
+    except:
+        return value
+
 def is_logged_in():
     return "username" in session
 
@@ -327,7 +364,7 @@ def admin_alterar_senha(user_id):
         usuario = conn.execute("SELECT username FROM usuarios WHERE id = ?", (user_id,)).fetchone()
         conn.close()
         
-        flash(f"Senha do usuário {usuario["username"]} alterada com sucesso!", "success")
+        flash(f"Senha do usuário {usuario['username']} alterada com sucesso!", "success")
         return redirect(url_for("admin_panel"))
         
     except Exception as e:
@@ -339,7 +376,6 @@ def admin_alterar_senha(user_id):
 @admin_required
 def admin_excluir_usuario(user_id):
     """Excluir usuário"""
-    # Não permitir que o admin exclua a si mesmo
     conn = get_db_connection()
     usuario = conn.execute("SELECT username FROM usuarios WHERE id = ?", (user_id,)).fetchone()
     
@@ -353,7 +389,7 @@ def admin_excluir_usuario(user_id):
         conn.commit()
         conn.close()
         
-        flash(f"Usuário {usuario["username"]} excluído com sucesso!", "success")
+        flash(f"Usuário {usuario['username']} excluído com sucesso!", "success")
         
     except Exception as e:
         flash(f"Erro ao excluir usuário: {str(e)}", "error")
@@ -569,7 +605,7 @@ def registrar_saida(id):
         return redirect(url_for("consultar"))
     
     data_saida = datetime.now().strftime("%Y-%m-%d")
-    hora_saida = datetime.now().strftime("%H:%M")
+    hora_saida = datetime.now().strftime("%H:%M:%S")
     periodoalterado = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     usuarioalterado = session["username"]
     data_alterada = datetime.now().strftime("%Y-%m-%d")
@@ -594,4 +630,3 @@ def registrar_saida(id):
 if __name__ == "__main__":
     init_db()
     app.run(debug=False, host="0.0.0.0", port=5000)
-
