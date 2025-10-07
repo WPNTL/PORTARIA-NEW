@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 import sqlite3
 import os
 from datetime import datetime
-import bcrypt
+import bcrypt # type: ignore
 from functools import wraps
 
 app = Flask(__name__)
