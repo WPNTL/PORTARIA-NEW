@@ -114,7 +114,7 @@ input:not(:checked) + .slider .moon-icon {
 }
 
 [data-theme="dark"] .login-page {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background: linear-gradient(135deg, #1a2332 0%, #2d3e50 100%);
 }
 
 .login-page .card {
@@ -123,13 +123,18 @@ input:not(:checked) + .slider .moon-icon {
     background-color: var(--card-bg);
 }
 
-.login-page .card-header {
+/* Header do card de login - MODO DIURNO */
+.login-page .card-header.bg-primary {
     border-radius: 15px 15px 0 0 !important;
     background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+    color: white !important;
 }
 
-[data-theme="dark"] .login-page .card-header {
-    background: linear-gradient(135deg, #1a472a 0%, #0d3d1f 100%) !important;
+/* Header do card de login - MODO NOTURNO - AZUL */
+[data-theme="dark"] .login-page .card-header.bg-primary {
+    border-radius: 15px 15px 0 0 !important;
+    background: linear-gradient(135deg, #0056b3 0%, #003d82 100%) !important;
+    color: white !important;
 }
 
 /* Navbar */
@@ -145,7 +150,7 @@ input:not(:checked) + .slider .moon-icon {
     background-color: #0056b3 !important;
 }
 
-[data-theme="dark"] .bg-danger {
+[data-theme="dark"] .navbar-dark.bg-danger {
     background-color: #8b1a1a !important;
 }
 
